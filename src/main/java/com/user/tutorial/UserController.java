@@ -66,15 +66,17 @@ public class UserController {
 	@RequestMapping(value="/user/{username}", method=RequestMethod.GET)
 	@ResponseBody
 	public UserResponse getuserByUsername(@PathVariable("username") String username) {
-		User myuser = userRepository.getUserByUsername(username);
-		
-		if (myuser != null) {
-			logger.info("Inside getuserByUsername, returned: " + myuser.toString());
+		User user = userRepository.getUserByUsername(username);
+		UserResponse userResponse;
+		if (user != null) {
+			userResponse = new UserResponse(true, user);
+			logger.info("Inside getuserByUsername, returned: " + user.toString());
 		} else {
+			userResponse = new UserResponse(false, user);
 			logger.info("Inside getuserByUsername, User: " + username + ", NOT FOUND!");
 		}
 		
-		UserResponse userResponse = new UserResponse(true, myuser);
+		
 		return userResponse; 
 	}
 
