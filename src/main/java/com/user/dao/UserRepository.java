@@ -55,4 +55,17 @@ public class UserRepository {
         
         return user;
     }
+    
+    public User validateUser(String email, String password)
+    {
+    	Query query = new Query();
+    	
+    	query.addCriteria(
+                Criteria.where("email").is(email).andOperator(
+                      Criteria.where("password").is(password)
+	            )
+             );
+    	return mongoTemplate.findOne(query, User.class, COLLECTION_NAME);
+    }
+    
 }

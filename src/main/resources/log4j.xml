@@ -11,7 +11,7 @@
 	</appender>
 	
 	<!-- Application Loggers -->
-	<logger name="com.avaldes.tutorial">
+	<logger name="com.user">
 		<level value="info" />
 	</logger>
 	

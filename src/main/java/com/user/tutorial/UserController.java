@@ -12,9 +12,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.user.dao.UserRepository;
 import com.user.model.User;
 import com.user.rest.MultipleUserResponse;
@@ -22,7 +25,7 @@ import com.user.rest.RestResponse;
 import com.user.rest.UserResponse;
 
 /**
- * Handles requests for the application home page.
+ * Handles requests for User Entity
  */
 @Controller
 public class UserController {
@@ -60,7 +63,7 @@ public class UserController {
 		return extResp;
 	}
 	
-	@RequestMapping(value="/user/{User}", method=RequestMethod.GET)
+	@RequestMapping(value="/user/{username}", method=RequestMethod.GET)
 	@ResponseBody
 	public UserResponse getuserByUsername(@PathVariable("username") String username) {
 		User myuser = userRepository.getUserByUsername(username);
@@ -71,60 +74,82 @@ public class UserController {
 			logger.info("Inside getuserByUsername, User: " + username + ", NOT FOUND!");
 		}
 		
-		UserResponse extResp = new UserResponse(true, myuser);
-		return extResp; 
+		UserResponse userResponse = new UserResponse(true, myuser);
+		return userResponse; 
 	}
 
-	@RequestMapping(value="/user/delete/{User}", method=RequestMethod.DELETE)
+	@RequestMapping(value="/user/delete/{username}", method=RequestMethod.DELETE)
 	@ResponseBody
-	public RestResponse deleteuser(@PathVariable("User") String username) {
-		RestResponse extResp;
+	public RestResponse deleteuser(@PathVariable("username") String username) {
+		RestResponse restResponse;
 		
 		User myuser = userRepository.deleteUser(username);
 		
 		if (myuser != null) {
-			logger.info("Inside deleteuserByUsername, deleted: " + myuser.toString());
-			extResp = new RestResponse(true, "Successfully deleted user: " + myuser.toString());
+			logger.info("Inside deleteuserByUsername, deleted: " + myuser.getUsername());
+			restResponse = new RestResponse(true, "Successfully deleted user: " + myuser.getUsername());
 		} else {
 			logger.info("Inside deleteuserByUsername, User: " + username + ", NOT FOUND!");
-			extResp = new RestResponse(false, "Failed to delete User: " + username);
+			restResponse = new RestResponse(false, "Failed to delete User: " + username);
 		}
 		
-		return extResp;
+		return restResponse;
 	}
 	
-	@RequestMapping(value="/user/update/{User}", method=RequestMethod.PUT)
+	@RequestMapping(value="/user/update/{username}", method=RequestMethod.PUT)
 	@ResponseBody
-	public RestResponse updateuserByTicker(@PathVariable("User") String userName, @ModelAttribute("user") User user) {
-		RestResponse extResp;
+	public RestResponse updateUser(@PathVariable ("username") String username, @RequestBody User user) {
 		
-		User myuser = userRepository.updateUser(userName, user);
+		RestResponse restResponse;
+		
+		User myuser = userRepository.updateUser(username, user);
 		
 		if (myuser != null) {
 			logger.info("Inside updateuserByTicker, updated: " + myuser.toString());
-			extResp = new RestResponse(true, "Successfully updated user: " + myuser.toString());
+			restResponse = new RestResponse(true, "Successfully updated user: " + myuser.getUsername());
 		} else {
 			logger.info("Inside updateuserByTicker, User: " + user + ", NOT FOUND!");
-			extResp = new RestResponse(false, "Failed to update User: " + user);
+			restResponse = new RestResponse(false, "Failed to update User: " + user);
 		}
 		
-		return extResp;
+		return restResponse;
 	}
 
 	@RequestMapping(value="/user/adduser", method=RequestMethod.POST)
 	@ResponseBody
-	public RestResponse adduser(@ModelAttribute("user") User user) {
-		RestResponse extResp;
+	public RestResponse adduser(@RequestBody User user) {
+		RestResponse restResponse;
 		
 		if (user.getUsername() != null && user.getUsername().length() > 0) {
-			logger.info("Inside adduser, adding: " + user.toString());
+			logger.info(" adduser, adding: " + user.toString());
 			userRepository.addUser(user);
-			extResp = new RestResponse(true, "Successfully added user: " + user.getUsername());
+			restResponse = new RestResponse(true, "Successfully added user: " + user.getUsername());
 		} else {
 			logger.info("Failed to insert...");
-			extResp = new RestResponse(false, "Failed to insert...");
+			restResponse = new RestResponse(false, "Failed to insert...");
 		}
 		
-		return extResp;
-	}	
+		return restResponse;
+	}
+	
+	@RequestMapping(value="/validateUser", method=RequestMethod.GET)
+	@ResponseBody
+	public RestResponse validateUser(@RequestParam ("email") String email,@RequestParam ("password") String password) {
+		
+		User myuser = userRepository.validateUser(email, password);
+		RestResponse restResponse = new RestResponse();
+		if (myuser != null) {
+			restResponse.setSuccess(true);
+			restResponse.setMessage("User is validated successfully !");
+			logger.info("validateUser, returned: " + myuser.toString());
+		} else {
+			restResponse.setSuccess(false);
+			restResponse.setMessage("User is not found !");
+			logger.info("validateUser, User: " + email + ", NOT FOUND!");
+		}
+		
+		
+		return restResponse; 
+	}
+	
 }
