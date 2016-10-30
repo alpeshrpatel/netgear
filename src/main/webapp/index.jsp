@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="include/styles.css">
 </head>
 <body>
-	<h1>Services</h1>
+	<h1>Services is up and running</h1>
 	<br>
 	<p>REST Web Service</p>
 	<br>

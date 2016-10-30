@@ -86,10 +86,10 @@ public class UserController {
 		User myuser = userRepository.deleteUser(username);
 		
 		if (myuser != null) {
-			logger.info("Inside deleteuserByUsername, deleted: " + myuser.getUsername());
+			logger.info("Inside delete, deleted: " + myuser.getUsername());
 			restResponse = new RestResponse(true, "Successfully deleted user: " + myuser.getUsername());
 		} else {
-			logger.info("Inside deleteuserByUsername, User: " + username + ", NOT FOUND!");
+			logger.info("Inside delete, User: " + username + ", NOT FOUND!");
 			restResponse = new RestResponse(false, "Failed to delete User: " + username);
 		}
 		
@@ -105,10 +105,10 @@ public class UserController {
 		User myuser = userRepository.updateUser(username, user);
 		
 		if (myuser != null) {
-			logger.info("Inside updateuserByTicker, updated: " + myuser.toString());
+			logger.info("Inside updateUser, updated: " + myuser.toString());
 			restResponse = new RestResponse(true, "Successfully updated user: " + myuser.getUsername());
 		} else {
-			logger.info("Inside updateuserByTicker, User: " + user + ", NOT FOUND!");
+			logger.info("Inside updateUser, User: " + user + ", NOT FOUND!");
 			restResponse = new RestResponse(false, "Failed to update User: " + user);
 		}
 		
