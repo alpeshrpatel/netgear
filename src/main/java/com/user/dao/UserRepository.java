@@ -1,7 +1,10 @@
 package com.user.dao;
 
 import java.util.List;
+import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -9,20 +12,27 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
+import com.user.controller.UserController;
 import com.user.model.User;
 
 @Repository
 public class UserRepository {
 	public static final String COLLECTION_NAME = "user";
-	
+	private static final Logger logger = LoggerFactory.getLogger(UserRepository.class);
 	@Autowired
     private MongoTemplate mongoTemplate;
 	
 	public void addUser(User user) {
+		Set<String> dbcoll = mongoTemplate.getCollectionNames();
+		
+		for (String string : dbcoll) {
+			logger.info(string);
+		}
+		
         if (!mongoTemplate.collectionExists(User.class)) {
             mongoTemplate.createCollection(User.class);
         }       
-        mongoTemplate.insert(user, COLLECTION_NAME);
+        mongoTemplate.save(user, COLLECTION_NAME);
     }
 	
 	public User getUserByUsername(String username) {
@@ -55,6 +65,8 @@ public class UserRepository {
         
         return user;
     }
+    
+    
     
     public User validateUser(String email, String password)
     {
